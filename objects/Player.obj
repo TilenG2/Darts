@@ -1,7 +1,3 @@
-# Blender v3.6.0 OBJ File: 'Player.blend'
-# www.blender.org
-mtllib Player.mtl
-o Cylinder
 v 0.000000 0.000000 -0.250000
 v 0.000000 2.000000 -0.250000
 v 0.048773 0.000000 -0.245196
