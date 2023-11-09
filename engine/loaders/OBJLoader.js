@@ -1,4 +1,4 @@
-import { Mesh, Vertex } from './engine/core.js';
+import { Mesh, Vertex } from '../core.js';
 
 export class OBJLoader {
 

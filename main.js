@@ -4,7 +4,7 @@ import { ResizeSystem } from './engine/systems/ResizeSystem.js';
 import { UpdateSystem } from './engine/systems/UpdateSystem.js';
 
 import { ImageLoader } from './engine/loaders/ImageLoader.js';
-import { OBJLoader } from './OBJLoader.js';
+import { OBJLoader } from './engine/loaders/OBJLoader.js';
 
 import { OrbitController } from './engine/controllers/OrbitController.js';
 
