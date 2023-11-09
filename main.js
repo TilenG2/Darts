@@ -47,35 +47,35 @@ const model = new Node();
 model.addComponent(new Model({
     primitives: [
         new Primitive({
-            mesh: await new OBJLoader().loadMesh('./Objects/Dart.obj'),
+            mesh: await new OBJLoader().loadMesh('./objects/dart.obj'),
             material: new Material({
-              baseTexture: new Texture({
-                  image: await new ImageLoader().load('./img/static.jpg'),
-                  sampler: new Sampler({
-                      minFilter: 'nearest',
-                      magFilter: 'nearest',
-                  }),
-              }),
-          }),
+                baseTexture: new Texture({
+                    image: await new ImageLoader().load('./img/static.jpg'),
+                    sampler: new Sampler({
+                        minFilter: 'nearest',
+                        magFilter: 'nearest',
+                    }),
+                }),
+            }),
         }),
     ],
 }));
 scene.addChild(model);
 
 function update(time, dt) {
-  scene.traverse(node => {
-      for (const component of node.components) {
-          component.update?.(time, dt);
-      }
-  });
+    scene.traverse(node => {
+        for (const component of node.components) {
+            component.update?.(time, dt);
+        }
+    });
 }
 
 function render() {
-  renderer.render(scene, camera, light);
+    renderer.render(scene, camera, light);
 }
 
-function resize({ displaySize: { width, height }}) {
-  camera.getComponentOfType(Camera).aspect = width / height;
+function resize({ displaySize: { width, height } }) {
+    camera.getComponentOfType(Camera).aspect = width / height;
 }
 
 new ResizeSystem({ canvas, resize }).start();
