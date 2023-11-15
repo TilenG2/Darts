@@ -1,77 +1,64 @@
-// import { GUI } from '../../../lib/dat.gui.module.js';
-
-import { ResizeSystem } from './engine/systems/ResizeSystem.js';
-import { UpdateSystem } from './engine/systems/UpdateSystem.js';
-
-import { ImageLoader } from './engine/loaders/ImageLoader.js';
-import { OBJLoader } from './engine/loaders/OBJLoader.js';
-
-import { OrbitController } from './engine/controllers/OrbitController.js';
-
 import {
     Camera,
-    Material,
-    Model,
     Node,
-    Primitive,
-    Sampler,
-    Texture,
     Transform,
-} from './engine/core.js';
+    Model
+} from "./common/engine/core.js";
 
-import { UnlitRenderer } from './renders/UnlitRenderer.js';
-import { Light } from './Light.js';
+import { GLTFLoader } from "./common/engine/loaders/GLTFLoader.js";
+import { LitRenderer } from "./common/engine/renderers/LitRenderer.js";
+import { ResizeSystem } from "./common/engine/systems/ResizeSystem.js";
+import { UpdateSystem } from "./common/engine/systems/UpdateSystem.js";
+import { TurntableController } from "./common/engine/controllers/TurntableController.js";
+import { RotateAnimator } from "./common/engine/animators/RotateAnimator.js";
+import { Light } from "./Light.js"
 
-const canvas = document.querySelector('canvas');
-const gl = canvas.getContext('webgl2');
-const renderer = new UnlitRenderer(gl);
+//Create renderer
+const canvas = document.querySelector("canvas");
+const renderer = new LitRenderer(canvas);
+await renderer.initialize();
 
-const scene = new Node();
+//Load scene
+const gltfLoader = new GLTFLoader();
+await gltfLoader.load("common/models/dart/dart.gltf"); //GLTFSEperate
 
-const camera = new Node();
-camera.addComponent(new Transform());
-camera.addComponent(new Camera({
-    near: 0.1,
-    far: 100,
+const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
+
+//Setup camera
+const camera = scene.find(node => node.getComponentOfType(Camera));
+camera.addComponent(new TurntableController(camera, document.body, {
+    distance: 10
 }));
-camera.addComponent(new OrbitController(camera, canvas));
-scene.addChild(camera);
 
+// Set up model
+// const model = gltfLoader.loadNode('Geometry');
+// // const model = scene.find(node => node.getComponentOfType(Model));
+// model.addComponent(new RotateAnimator(model, {
+//     startRotation: [0, 0, 0, 1],
+//     endRotation: [0, 0, 1, 0],
+//     duration: 15,
+//     loop: true
+// }));
+
+// Crate light
 const light = new Node();
-light.addComponent(new Light({
-    direction: [-1, 1, 1],
+light.addComponent(new Transform({
+    translation: [0, 2, 0]
 }));
+light.addComponent(new Light());
 scene.addChild(light);
 
-const model = new Node();
-model.addComponent(new Model({
-    primitives: [
-        new Primitive({
-            mesh: await new OBJLoader().loadMesh('./objects/dart.obj'),
-            material: new Material({
-                baseTexture: new Texture({
-                    image: await new ImageLoader().load('./img/static.jpg'),
-                    sampler: new Sampler({
-                        minFilter: 'nearest',
-                        magFilter: 'nearest',
-                    }),
-                }),
-            }),
-        }),
-    ],
-}));
-scene.addChild(model);
-
-function update(time, dt) {
+function update(t, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
-            component.update?.(time, dt);
+            component.update?.(t, dt);
         }
-    });
+    })
 }
 
 function render() {
-    renderer.render(scene, camera, light);
+    //Render the scene
+    renderer.render(scene, camera);
 }
 
 function resize({ displaySize: { width, height } }) {
