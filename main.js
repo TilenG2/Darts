@@ -22,7 +22,7 @@ await renderer.initialize();
 
 //Load scene
 const gltfLoader = new GLTFLoader();
-await gltfLoader.load("common/models/dart/dart.gltf"); //GLTFSEperate
+await gltfLoader.load("common/models/prostor/prostor.gltf"); //GLTFSEperate
 
 const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
@@ -35,7 +35,7 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 // camera.addComponent(new Transform({}))
 
 // Set up model
-const model = gltfLoader.loadNode('darts_obj');
+// const model = gltfLoader.loadNode('darts_obj');
 // const model = scene.find(node => node.getComponentOfType(Model));
 // model.addComponent(new LinearAnimator(model, {
 //     startPosition: [0, 0, 0],
