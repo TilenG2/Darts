@@ -10,8 +10,10 @@ import { LitRenderer } from "./common/engine/renderers/LitRenderer.js";
 import { ResizeSystem } from "./common/engine/systems/ResizeSystem.js";
 import { UpdateSystem } from "./common/engine/systems/UpdateSystem.js";
 import { TurntableController } from "./common/engine/controllers/TurntableController.js";
-import { RotateAnimator } from "./common/engine/animators/RotateAnimator.js";
+import { LinearAnimator } from "./common/engine/animators/LinearAnimator.js";
 import { Light } from "./Light.js"
+
+import { FirstPersonController } from "./common/engine/controllers/FirstPersonController.js"
 
 //Create renderer
 const canvas = document.querySelector("canvas");
@@ -26,17 +28,19 @@ const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
 //Setup camera
 const camera = scene.find(node => node.getComponentOfType(Camera));
-camera.addComponent(new TurntableController(camera, document.body, {
-    distance: 10
-}));
+// camera.addComponent(new TurntableController(camera, document.body, {
+//     distance: 10
+// }));
+camera.addComponent(new FirstPersonController(camera, canvas));
+// camera.addComponent(new Transform({}))
 
 // Set up model
-// const model = gltfLoader.loadNode('Geometry');
-// // const model = scene.find(node => node.getComponentOfType(Model));
-// model.addComponent(new RotateAnimator(model, {
-//     startRotation: [0, 0, 0, 1],
-//     endRotation: [0, 0, 1, 0],
-//     duration: 15,
+const model = gltfLoader.loadNode('darts_obj');
+// const model = scene.find(node => node.getComponentOfType(Model));
+// model.addComponent(new LinearAnimator(model, {
+//     startPosition: [0, 0, 0],
+//     endPosition: [20, 0, 0],
+//     duration: 1,
 //     loop: true
 // }));
 
