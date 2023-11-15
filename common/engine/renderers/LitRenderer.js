@@ -105,11 +105,11 @@ export class LitRenderer extends BaseRenderer {
         // TODO figure this out
         // marbit je fora k gltf file nima 
 
-        // const glTexture = this.prepareImage(material.baseTexture.image);
-        // const glSampler = this.prepareSampler(material.baseTexture.sampler);
+        const glTexture = this.prepareImage(material.baseTexture.image);
+        const glSampler = this.prepareSampler(material.baseTexture.sampler);
 
-        // gl.bindTexture(gl.TEXTURE_2D, glTexture);
-        // gl.bindSampler(0, glSampler);
+        gl.bindTexture(gl.TEXTURE_2D, glTexture);
+        gl.bindSampler(0, glSampler);
 
         gl.drawElements(gl.TRIANGLES, primitive.mesh.indices.length, gl.UNSIGNED_INT, 0);
 
