@@ -5346,8 +5346,8 @@
 		},
 		{
 			"mimeType":"image/png",
-			"name":"Glass",
-			"uri":"Glass.png"
+			"name":"glass",
+			"uri":"glass.png"
 		},
 		{
 			"mimeType":"image/png",
