@@ -36,7 +36,7 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 
 // Set up model
 // const model = gltfLoader.loadNode('darts_obj');
-// const model = scene.find(node => node.getComponentOfType(Model));
+// // const model = scene.find(node => node.getComponentOfType(Model));
 // model.addComponent(new LinearAnimator(model, {
 //     startPosition: [0, 0, 0],
 //     endPosition: [20, 0, 0],
@@ -45,12 +45,20 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 // }));
 
 // Crate light
-const light = new Node();
-light.addComponent(new Transform({
-    translation: [0, 2, 0]
-}));
+var light
+light = gltfLoader.l("Point");
 light.addComponent(new Light());
 scene.addChild(light);
+
+light = gltfLoader.loadNode("Point.001");
+light.addComponent(new Light());
+scene.addChild(light);
+
+// za usak objek ugotov ker light je njemu najblizje in uporabi tstega
+
+// light = gltfLoader.loadNode("Point.002");
+// light.addComponent(new Light());
+// scene.addChild(light);
 
 function update(t, dt) {
     scene.traverse(node => {

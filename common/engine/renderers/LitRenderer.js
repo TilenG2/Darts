@@ -102,9 +102,6 @@ export class LitRenderer extends BaseRenderer {
         gl.activeTexture(gl.TEXTURE0);
         gl.uniform1i(uniforms.uBaseTexture, 0);
 
-        // TODO figure this out
-        // marbit je fora k gltf file nima 
-
         const glTexture = this.prepareImage(material.baseTexture.image);
         const glSampler = this.prepareSampler(material.baseTexture.sampler);
 
