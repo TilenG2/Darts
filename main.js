@@ -46,7 +46,7 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 
 // Crate light
 var light
-light = gltfLoader.l("Point");
+light = gltfLoader.loadNode("Point");
 light.addComponent(new Light());
 scene.addChild(light);
 
