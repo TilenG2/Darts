@@ -4138,7 +4138,7 @@
 		},
 		{
 			"doubleSided":true,
-			"name":"Glass",
+			"name":"glass",
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
 					"index":6
@@ -5550,8 +5550,8 @@
 		},
 		{
 			"mimeType":"image/png",
-			"name":"Glass",
-			"uri":"Glass.png"
+			"name":"glass",
+			"uri":"glass.png"
 		},
 		{
 			"mimeType":"image/png",
