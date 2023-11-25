@@ -46,13 +46,13 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 
 // Crate light
 var light
-light = gltfLoader.loadNode("Point");
+light = gltfLoader.loadNode("Light0");
 light.addComponent(new Light());
 scene.addChild(light);
 
-light = gltfLoader.loadNode("Point.001");
-light.addComponent(new Light());
-scene.addChild(light);
+//light = gltfLoader.loadNode("Point.001");
+//light.addComponent(new Light());
+//scene.addChild(light);
 
 // za usak objek ugotov ker light je njemu najblizje in uporabi tstega
 
