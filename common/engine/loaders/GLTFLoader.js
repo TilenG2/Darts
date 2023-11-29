@@ -376,9 +376,25 @@ export class GLTFLoader {
 
             const options = {};
             options.mesh = this.createMeshFromPrimitive(primitiveSpec);
+            const white = new ImageData(new Uint8ClampedArray([255, 255, 255, 255]), 1, 1);
 
             if (primitiveSpec.material !== undefined) {
                 options.material = this.loadMaterial(primitiveSpec.material);
+                options.material.metalnessTexture = new Texture({
+                    image: white,
+                    sampler: new Sampler({
+                        minFilter: 'nearest',
+                        magFilter: 'nearest',
+                    }),
+                });
+                options.material.roughnessTexture = new Texture({
+                    image: white,
+                    sampler: new Sampler({
+                        minFilter: 'nearest',
+                        magFilter: 'nearest',
+                    }),
+                });
+                options.material.roughnessFactor = 1;
             }
 
             primitives.push(new Primitive(options));
@@ -460,6 +476,7 @@ export class GLTFLoader {
         this.cache.set(gltfSpec, node);
         return node;
     }
+
     loadLight(nameOrIndex) {
         const gltfSpec = this.findByNameOrIndex(this.gltf.extensions.KHR_lights_punctual.lights, nameOrIndex);
         if (!gltfSpec) {
@@ -472,6 +489,7 @@ export class GLTFLoader {
         const light = new Light({
             color: gltfSpec.color,
             intensity: gltfSpec.intensity,
+            attenuation: gltfSpec.attenuation,
         });
 
         this.cache.set(gltfSpec, light);

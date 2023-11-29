@@ -13,7 +13,7 @@ import {
 } from '../core/SceneUtils.js';
 import { Light } from "../../../Light.js"
 
-const lightIntensityMultyplyer = 0.0012;
+const lightIntensityMultyplyer = 0.0001;
 export class LitRenderer extends BaseRenderer {
 
     constructor(canvas) {
@@ -62,9 +62,11 @@ export class LitRenderer extends BaseRenderer {
             const lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
             const lightComponent = lights[i].getComponentOfType(Light);
             const lightColor = lightComponent.color;
+            const lightAttenuation = lightComponent.attenuation;
             const lightIntensity = lightComponent.intensity * lightIntensityMultyplyer;
             gl.uniform3fv(uniforms.uLights[i].position, lightPosition);
             gl.uniform3fv(uniforms.uLights[i].color, lightColor);
+            gl.uniform3fv(uniforms.uLights[i].attenuation, lightAttenuation);
             gl.uniform1f(uniforms.uLights[i].intensity, lightIntensity);
         }
 
@@ -79,57 +81,6 @@ export class LitRenderer extends BaseRenderer {
         const localMatrix = getLocalModelMatrix(node);
         modelMatrix = mat4.mul(mat4.create(), modelMatrix, localMatrix);
         gl.uniformMatrix4fv(uniforms.uModelMatrix, false, modelMatrix);
-
-
-
-
-        // lights.forEach(light => {
-        //     lightPosition = mat4.getTranslation(vec3.create(), getGlobalModelMatrix(light));
-        //     if (vec3.distance(lightPosition, modelPosition) < distance[0]) {
-        //         distance[0] = vec3.distance(lightPosition, modelPosition);
-        //         lightMatrix = getGlobalModelMatrix(light);
-        //     }
-        // });
-        // lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
-        // gl.uniform3fv(uniforms.uLightPosition1, lightPosition);
-
-
-        // lights.forEach(light => {
-        //     lightPosition = mat4.getTranslation(vec3.create(), getGlobalModelMatrix(light));
-        //     var dist = vec3.distance(lightPosition, modelPosition);
-        //     if (dist < distance[1] && distance[0] < dist) {
-        //         distance[1] = vec3.distance(lightPosition, modelPosition);
-        //         lightMatrix = getGlobalModelMatrix(light);
-        //     }
-        // });
-        // lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
-        // gl.uniform3fv(uniforms.uLightPosition2, lightPosition);
-
-
-        // lights.forEach(light => {
-        //     lightPosition = mat4.getTranslation(vec3.create(), getGlobalModelMatrix(light));
-        //     var dist = vec3.distance(lightPosition, modelPosition);
-        //     if (dist < distance[2] && distance[1] < dist) {
-        //         distance[2] = vec3.distance(lightPosition, modelPosition);
-        //         lightMatrix = getGlobalModelMatrix(light);
-        //     }
-        // });
-        // lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
-        // gl.uniform3fv(uniforms.uLightPosition3, lightPosition);
-
-
-        // lights.forEach(light => {
-        //     lightPosition = mat4.getTranslation(vec3.create(), getGlobalModelMatrix(light));
-        //     var dist = vec3.distance(lightPosition, modelPosition);
-        //     if (dist < distance[3] && distance[2] < dist) {
-        //         distance[3] = vec3.distance(lightPosition, modelPosition);
-        //         lightMatrix = getGlobalModelMatrix(light);
-        //     }
-        // });
-        // // console.log(distance)
-        // lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
-        // gl.uniform3fv(uniforms.uLightPosition4, lightPosition);
-
 
         const normalMatrix = mat3.normalFromMat4(mat3.create(), modelMatrix);
         gl.uniformMatrix3fv(uniforms.uNormalMatrix, false, normalMatrix);
@@ -155,10 +106,34 @@ export class LitRenderer extends BaseRenderer {
         gl.bindVertexArray(vao);
 
         const material = primitive.material;
-        gl.uniform4fv(uniforms.uBaseFactor, material.baseFactor);
+
+        const baseTexture = this.prepareImage(material.baseTexture.image);
+        const baseSampler = this.prepareSampler(material.baseTexture.sampler);
+        const metalnessTexture = this.prepareImage(material.metalnessTexture.image);
+        const metalnessSampler = this.prepareSampler(material.metalnessTexture.sampler);
+        const roughnessTexture = this.prepareImage(material.roughnessTexture.image);
+        const roughnessSampler = this.prepareSampler(material.roughnessTexture.sampler);
+
+        // gl.uniform4fv(uniforms.uBaseFactor, material.baseFactor);
 
         gl.activeTexture(gl.TEXTURE0);
         gl.uniform1i(uniforms.uBaseTexture, 0);
+        gl.bindTexture(gl.TEXTURE_2D, baseTexture);
+        gl.bindSampler(0, baseSampler);
+
+        gl.activeTexture(gl.TEXTURE1);
+        gl.uniform1i(uniforms.uMetalnessTexture, 1);
+        gl.bindTexture(gl.TEXTURE_2D, metalnessTexture);
+        gl.bindSampler(1, metalnessSampler);
+
+        gl.activeTexture(gl.TEXTURE2);
+        gl.uniform1i(uniforms.uRoughnessTexture, 2);
+        gl.bindTexture(gl.TEXTURE_2D, roughnessTexture);
+        gl.bindSampler(2, roughnessSampler);
+
+        gl.uniform3fv(uniforms.uBaseFactor, material.baseFactor.slice(0, 3));
+        gl.uniform1f(uniforms.uMetalnessFactor, material.metalnessFactor);
+        gl.uniform1f(uniforms.uRoughnessFactor, material.roughnessFactor);
 
         const glTexture = this.prepareImage(material.baseTexture.image);
         const glSampler = this.prepareSampler(material.baseTexture.sampler);

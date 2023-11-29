@@ -44,14 +44,6 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 //     loop: true
 // }));
 
-
-// console.log(scene.filter(node => node.getComponentOfType(Light)));
-// neki = scene.getComponentsOfType(Light);
-// console.log(neki);
-
-// za usak objek ugotov ker light je njemu najblizje in uporabi tstega
-
-
 function update(t, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
