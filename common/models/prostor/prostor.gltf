@@ -5565,10 +5565,6 @@
 		},
 		{
 			"sampler":0,
-			"source":2
-		},
-		{
-			"sampler":0,
 			"source":12
 		},
 		{
@@ -5593,6 +5589,10 @@
 		},
 		{
 			"sampler":0,
+			"source":18
+		},
+		{
+			"sampler":0,
 			"source":5
 		},
 		{
@@ -5605,15 +5605,15 @@
 		},
 		{
 			"sampler":0,
-			"source":12
-		},
-		{
-			"sampler":0,
-			"source":15
+			"source":13
 		},
 		{
 			"sampler":0,
 			"source":16
+		},
+		{
+			"sampler":0,
+			"source":17
 		}
 	],
 	"images":[
@@ -5676,6 +5676,11 @@
 			"mimeType":"image/png",
 			"name":"DarkRed",
 			"uri":"DarkRed.png"
+		},
+		{
+			"mimeType":"image/png",
+			"name":"SemiBlack",
+			"uri":"SemiBlack.png"
 		},
 		{
 			"mimeType":"image/png",
