@@ -44,21 +44,13 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 //     loop: true
 // }));
 
-// Crate light
-var light
-light = gltfLoader.loadNode("Light0");
-light.addComponent(new Light());
-scene.addChild(light);
 
-//light = gltfLoader.loadNode("Point.001");
-//light.addComponent(new Light());
-//scene.addChild(light);
+// console.log(scene.filter(node => node.getComponentOfType(Light)));
+// neki = scene.getComponentsOfType(Light);
+// console.log(neki);
 
 // za usak objek ugotov ker light je njemu najblizje in uporabi tstega
 
-// light = gltfLoader.loadNode("Point.002");
-// light.addComponent(new Light());
-// scene.addChild(light);
 
 function update(t, dt) {
     scene.traverse(node => {

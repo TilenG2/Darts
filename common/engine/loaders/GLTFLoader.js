@@ -1,3 +1,4 @@
+import { Light } from '../../../Light.js';
 import {
     Accessor,
     Camera,
@@ -452,8 +453,29 @@ export class GLTFLoader {
             node.addComponent(this.loadMesh(gltfSpec.mesh));
         }
 
+        if (gltfSpec?.extensions?.KHR_lights_punctual) {
+            node.addComponent(this.loadLight(gltfSpec?.extensions?.KHR_lights_punctual.light));
+        }
+
         this.cache.set(gltfSpec, node);
         return node;
+    }
+    loadLight(nameOrIndex) {
+        const gltfSpec = this.findByNameOrIndex(this.gltf.extensions.KHR_lights_punctual.lights, nameOrIndex);
+        if (!gltfSpec) {
+            return null;
+        }
+        if (this.cache.has(gltfSpec)) {
+            return this.cache.get(gltfSpec);
+        }
+
+        const light = new Light({
+            color: gltfSpec.color,
+            intensity: gltfSpec.intensity,
+        });
+
+        this.cache.set(gltfSpec, light);
+        return light;
     }
 
     loadScene(nameOrIndex) {
