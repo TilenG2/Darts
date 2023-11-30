@@ -13,7 +13,8 @@ import {
 } from '../core/SceneUtils.js';
 import { Light } from "../../../Light.js"
 
-const lightIntensityMultyplyer = 0.0001;
+const lightIntensityMultyplyer = 0.0001; //bling
+// const lightIntensityMultyplyer = 0.0012; // lambert
 export class LitRenderer extends BaseRenderer {
 
     constructor(canvas) {
@@ -55,6 +56,7 @@ export class LitRenderer extends BaseRenderer {
 
         gl.uniformMatrix4fv(uniforms.uViewMatrix, false, viewMatrix);
         gl.uniformMatrix4fv(uniforms.uProjectionMatrix, false, projectionMatrix);
+        gl.uniform3fv(uniforms.uCameraPosition, mat4.getTranslation(vec3.create(), getGlobalModelMatrix(camera)));
 
         const lights = scene.filter(node => node.getComponentOfType(Light));
         for (let i = 0; i < lights.length; i++) {
@@ -107,14 +109,12 @@ export class LitRenderer extends BaseRenderer {
 
         const material = primitive.material;
 
-        const baseTexture = this.prepareImage(material.baseTexture.image);
+        const baseTexture = this.prepareImage(material.baseTexture.image, material.baseTexture.sRGB);
         const baseSampler = this.prepareSampler(material.baseTexture.sampler);
-        const metalnessTexture = this.prepareImage(material.metalnessTexture.image);
+        const metalnessTexture = this.prepareImage(material.metalnessTexture.image, material.metalnessTexture.sRGB);
         const metalnessSampler = this.prepareSampler(material.metalnessTexture.sampler);
-        const roughnessTexture = this.prepareImage(material.roughnessTexture.image);
+        const roughnessTexture = this.prepareImage(material.roughnessTexture.image, material.roughnessTexture.sRGB);
         const roughnessSampler = this.prepareSampler(material.roughnessTexture.sampler);
-
-        // gl.uniform4fv(uniforms.uBaseFactor, material.baseFactor);
 
         gl.activeTexture(gl.TEXTURE0);
         gl.uniform1i(uniforms.uBaseTexture, 0);

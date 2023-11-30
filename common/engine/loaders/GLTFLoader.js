@@ -386,6 +386,7 @@ export class GLTFLoader {
                         minFilter: 'nearest',
                         magFilter: 'nearest',
                     }),
+                    sRGB: false,
                 });
                 options.material.roughnessTexture = new Texture({
                     image: white,
@@ -393,8 +394,10 @@ export class GLTFLoader {
                         minFilter: 'nearest',
                         magFilter: 'nearest',
                     }),
+                    sRGB: false,
                 });
-                options.material.roughnessFactor = 1;
+                options.material.roughnessFactor = 5;
+                options.material.metalnessFactor = 0;
             }
 
             primitives.push(new Primitive(options));

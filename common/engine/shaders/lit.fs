@@ -126,7 +126,6 @@ vec3 getIlumination(Light light) {
 
 void main() {
     vec3 ill = vec3(0);
-    // vec3 N = normalize(vNormal);
     for (int i = 0; i < LIGHT_COUNT; i++) {
         ill += getIlumination(uLights[i]);
     }

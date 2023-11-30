@@ -58,19 +58,22 @@ export class BaseRenderer {
 
     prepareTexture(texture) {
         if (texture.image) {
-            this.prepareImage(texture.image);
+            this.prepareImage(texture.image, texture.sRGB);
         }
         if (texture.sampler) {
             this.prepareSampler(texture.sampler);
         }
     }
 
-    prepareImage(image) {
+    prepareImage(image, sRGB) {
         if (this.glObjects.has(image)) {
             return this.glObjects.get(image);
         }
 
-        const glTexture = WebGL.createTexture(this.gl, { image, mip: true });
+        const glTexture = WebGL.createTexture(this.gl, {
+            image, mip: true,
+            iformat: sRGB ? this.gl.SRGB8_ALPHA8 : this.gl.RGBA,
+        });
 
         this.glObjects.set(image, glTexture);
         return glTexture;
