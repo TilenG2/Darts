@@ -396,8 +396,6 @@ export class GLTFLoader {
                     }),
                     sRGB: false,
                 });
-                options.material.roughnessFactor = 5;
-                options.material.metalnessFactor = 0;
             }
 
             primitives.push(new Primitive(options));

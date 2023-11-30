@@ -7,13 +7,24 @@
     <link rel="shortcut icon" href="common/img/favico.ico" type="image/x-icon">
     <link rel="stylesheet" href="common/style.css">
     <script src="lib/gl-matrix-min.js"></script>
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./main.js">
+        let allowMove = false
+    </script>
+    <script src="./ui.js"></script>
 </head>
 
 <body>
+    <div id="intro">
+        <h1>Welcome to dart boys!</h1>
+        <p id="howToPlay">HOW TO PLAY: You play dart. Obviously. You need to score exact 301 points. And because normal
+            dart is soo easy, we made it harder. You are welcome. Drink from the glass on the counter, and the more you
+            drink, more dizzy you will become. Good luck!</p>
+        <p id="imp">The most important: have fun!</p>
+        <button id="startButton" onclick="start()">Let's play</button>
+    </div>
+    <p id="points">301 points</p>
     <div class="fullscreen">
         <canvas></canvas>
     </div>
 </body>
-
 </html>

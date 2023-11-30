@@ -110,7 +110,7 @@ vec3 getIlumination(Light light) {
 
     vec3 baseColor = texture(uBaseTexture, vTexCoord).rgb * uBaseFactor;
     float metalness = texture(uMetalnessTexture, vTexCoord).r * uMetalnessFactor;
-    float perceptualRoughness = texture(uRoughnessTexture, vTexCoord).r * uRoughnessFactor;
+    float perceptualRoughness = texture(uRoughnessTexture, vTexCoord).r * uRoughnessFactor * 10.0f;
     float roughness = perceptualRoughness * perceptualRoughness;
 
     vec3 f0 = mix(vec3(0.04f), baseColor, metalness);
