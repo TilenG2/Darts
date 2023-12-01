@@ -12,6 +12,7 @@ export function calculateAxisAlignedBoundingBox(mesh) {
     };
 }
 
+
 export function mergeAxisAlignedBoundingBoxes(boxes) {
     const initial = {
         min: vec3.clone(boxes[0].min),

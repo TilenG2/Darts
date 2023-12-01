@@ -76,15 +76,12 @@ calculates Axis Aliged Bounding Box:
 Axis Aligned: edges of bounding box are parallel to coordiante axes (It is aligned with global coordinate system)
 Bounding Box: 3D rectanguar enclosure that compeltly contains a set of objects.
 */
-let i = 0;
 const physics = new Physics(scene);
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
     if ((!model) || (!node.isStatic)) {
         return;
     }
-    i++;
-    console.log(i);
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
 });
