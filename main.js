@@ -2,7 +2,8 @@ import {
     Camera,
     Node,
     Transform,
-    Model
+    Model,
+    Mesh
 } from "./common/engine/core.js";
 
 import { GLTFLoader } from "./common/engine/loaders/GLTFLoader.js";
@@ -13,7 +14,15 @@ import { TurntableController } from "./common/engine/controllers/TurntableContro
 import { LinearAnimator } from "./common/engine/animators/LinearAnimator.js";
 import { Light } from "./Light.js"
 
-import { FirstPersonController } from "./common/engine/controllers/FirstPersonController.js"
+import { FirstPersonController } from "./common/engine/controllers/FirstPersonController.js";
+
+//For collision
+import {
+    calculateAxisAlignedBoundingBox,
+    mergeAxisAlignedBoundingBoxes
+} from "./common/engine/core/MeshUtils.js";
+
+import { Physics } from "./common/engine/core/Physics.js";
 
 //Create renderer
 const canvas = document.querySelector("canvas");
@@ -28,6 +37,7 @@ const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
 //Setup camera
 const camera = scene.find(node => node.getComponentOfType(Camera));
+
 // camera.addComponent(new TurntableController(camera, document.body, {
 //     distance: 10
 // }));
@@ -44,12 +54,50 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 //     loop: true
 // }));
 
+//Collision
+camera.isDynamic = true;
+camera.aabb = {
+    min: [-0.2, -2, -0.2],
+    max: [0.2, 1, 0.2],
+};
+
+scene.traverse(node => {
+    const model = node.getComponentOfType(Model);
+    if(!model){
+        return;
+    }
+    
+    node.isStatic = true;
+});
+
+/*
+For all nodes that have isStatic and that are model,
+calculates Axis Aliged Bounding Box:
+Axis Aligned: edges of bounding box are parallel to coordiante axes (It is aligned with global coordinate system)
+Bounding Box: 3D rectanguar enclosure that compeltly contains a set of objects.
+*/
+let i = 0;
+const physics = new Physics(scene);
+scene.traverse(node => {
+    const model = node.getComponentOfType(Model);
+    if ((!model) || (!node.isStatic)) {
+        return;
+    }
+    i++;
+    console.log(i);
+    const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
+    node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
+});
+
+
 function update(t, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
             component.update?.(t, dt);
         }
-    })
+    });
+
+    physics.update(t, dt);
 }
 
 function render() {

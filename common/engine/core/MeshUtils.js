@@ -18,8 +18,13 @@ export function mergeAxisAlignedBoundingBoxes(boxes) {
         max: vec3.clone(boxes[0].max),
     };
 
-    return {
-        min: boxes.reduce(({ min: amin }, { min: bmin }) => vec3.min(amin, amin, bmin), initial),
-        max: boxes.reduce(({ max: amax }, { max: bmax }) => vec3.max(amax, amax, bmax), initial),
-    };
+    const mergedBoundingBox = boxes.reduce((result, box) => {
+        const { min: boxMin, max: boxMax } = box;
+        return {
+            min: vec3.min(vec3.create(), result.min, boxMin),
+            max: vec3.max(vec3.create(), result.max, boxMax),
+        };
+    }, initial);
+
+    return mergedBoundingBox;
 }
