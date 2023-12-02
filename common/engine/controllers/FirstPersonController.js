@@ -27,6 +27,11 @@ export class FirstPersonController {
         this.decay = decay;
         this.pointerSensitivity = pointerSensitivity;
 
+        this.moveDist = 0;
+        this.Footsteps = [new Audio("common/audio/Footstep01.wav"), new Audio("common/audio/Footstep02.wav"),new Audio("common/audio/Footstep03.wav"),new Audio("common/audio/Footstep04.wav"),];
+        this.Footsteps.forEach(element => {
+            element.volume = 0.2;
+        });
         this.initHandlers();
     }
 
@@ -52,57 +57,64 @@ export class FirstPersonController {
     }
 
     update(t, dt) {
-        // Calculate forward and right vectors.
-        const cos = Math.cos(this.yaw);
-        const sin = Math.sin(this.yaw);
-        const forward = [-sin, 0, -cos];
-        const right = [cos, 0, -sin];
+        if (allowMove) {
+            // Calculate forward and right vectors.
+            const cos = Math.cos(this.yaw);
+            const sin = Math.sin(this.yaw);
+            const forward = [-sin, 0, -cos];
+            const right = [cos, 0, -sin];
 
-        // Map user input to the acceleration vector.
-        const acc = vec3.create();
-        if (this.keys['KeyW']) {
-            vec3.add(acc, acc, forward);
-        }
-        if (this.keys['KeyS']) {
-            vec3.sub(acc, acc, forward);
-        }
-        if (this.keys['KeyD']) {
-            vec3.add(acc, acc, right);
-        }
-        if (this.keys['KeyA']) {
-            vec3.sub(acc, acc, right);
-        }
+            // Map user input to the acceleration vector.
+            const acc = vec3.create();
+            if (this.keys['KeyW']) {
+                vec3.add(acc, acc, forward);
+            }
+            if (this.keys['KeyS']) {
+                vec3.sub(acc, acc, forward);
+            }
+            if (this.keys['KeyD']) {
+                vec3.add(acc, acc, right);
+            }
+            if (this.keys['KeyA']) {
+                vec3.sub(acc, acc, right);
+            }
 
-        // Update velocity based on acceleration.
-        vec3.scaleAndAdd(this.velocity, this.velocity, acc, dt * this.acceleration);
+            // Update velocity based on acceleration.
+            vec3.scaleAndAdd(this.velocity, this.velocity, acc, dt * this.acceleration);
 
-        // If there is no user input, apply decay.
-        if (!this.keys['KeyW'] &&
-            !this.keys['KeyS'] &&
-            !this.keys['KeyD'] &&
-            !this.keys['KeyA'])
-        {
-            const decay = Math.exp(dt * Math.log(1 - this.decay));
-            vec3.scale(this.velocity, this.velocity, decay);
-        }
+            // If there is no user input, apply decay.
+            if (!this.keys['KeyW'] &&
+                !this.keys['KeyS'] &&
+                !this.keys['KeyD'] &&
+                !this.keys['KeyA']) {
+                const decay = Math.exp(dt * Math.log(1 - this.decay));
+                vec3.scale(this.velocity, this.velocity, decay);
+            }else{
+                this.moveDist++;
+                if (this.moveDist == 200) {
+                    this.Footsteps[Math.floor(Math.random() * 4)].play();
+                    this.moveDist = 0
+                }
+            }
 
-        // Limit speed to prevent accelerating to infinity and beyond.
-        const speed = vec3.length(this.velocity);
-        if (speed > this.maxSpeed) {
-            vec3.scale(this.velocity, this.velocity, this.maxSpeed / speed);
-        }
+            // Limit speed to prevent accelerating to infinity and beyond.
+            const speed = vec3.length(this.velocity);
+            if (speed > this.maxSpeed) {
+                vec3.scale(this.velocity, this.velocity, this.maxSpeed / speed);
+            }
 
-        const transform = this.node.getComponentOfType(Transform);
-        if (transform) {
-            // Update translation based on velocity.
-            vec3.scaleAndAdd(transform.translation,
-                transform.translation, this.velocity, dt);
+            const transform = this.node.getComponentOfType(Transform);
+            if (transform) {
+                // Update translation based on velocity.
+                vec3.scaleAndAdd(transform.translation,
+                    transform.translation, this.velocity, dt);
 
-            // Update rotation based on the Euler angles.
-            const rotation = quat.create();
-            quat.rotateY(rotation, rotation, this.yaw);
-            quat.rotateX(rotation, rotation, this.pitch);
-            transform.rotation = rotation;
+                // Update rotation based on the Euler angles.
+                const rotation = quat.create();
+                quat.rotateY(rotation, rotation, this.yaw);
+                quat.rotateX(rotation, rotation, this.pitch);
+                transform.rotation = rotation;
+            }
         }
     }
 
@@ -111,7 +123,7 @@ export class FirstPersonController {
         const dy = e.movementY;
 
         this.pitch -= dy * this.pointerSensitivity;
-        this.yaw   -= dx * this.pointerSensitivity;
+        this.yaw -= dx * this.pointerSensitivity;
 
         const twopi = Math.PI * 2;
         const halfpi = Math.PI / 2;

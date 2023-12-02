@@ -100,3 +100,9 @@ html {
     text-align: right;
     margin: 10px;
 }
+#braker{
+    background: #00000042;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+}
