@@ -472,6 +472,11 @@ export class GLTFLoader {
 
         if (gltfSpec?.extensions?.KHR_lights_punctual) {
             node.addComponent(this.loadLight(gltfSpec?.extensions?.KHR_lights_punctual.light));
+            node.addComponent(new Camera({
+                fovy: 2.5,
+                near: 0.01,
+                far: 3.5,
+            }));
         }
 
         this.cache.set(gltfSpec, node);

@@ -73,7 +73,7 @@ await gltfLoader.load("common/models/prostor/prostor.gltf"); //GLTFSEperate
 const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
 //Setup camera
-const camera = scene.find(node => node.getComponentOfType(Camera));
+const camera = gltfLoader.loadNode("Camera");
 
 // camera.addComponent(new TurntableController(camera, document.body, {
 //     distance: 10
