@@ -141,17 +141,30 @@ void main() {
         lightSpacePosition /= lightSpacePosition.w;
         lightSpacePosition.xyz = lightSpacePosition.xyz * 0.5f + 0.5f;
 
-        // for (int j = 0; j < LIGHT_COUNT; j++) {
-        //     tempShadowFactor += texture(uDepth[j], lightSpacePosition.xyz);
-        // } // ne vem zakaj to ne dela
-        tempShadowFactor = texture(uDepth[0], lightSpacePosition.xyz);
-        tempShadowFactor += texture(uDepth[1], lightSpacePosition.xyz);
-        tempShadowFactor += texture(uDepth[2], lightSpacePosition.xyz);
-        tempShadowFactor += texture(uDepth[3], lightSpacePosition.xyz);
-        tempShadowFactor += texture(uDepth[4], lightSpacePosition.xyz);
-        tempShadowFactor += texture(uDepth[5], lightSpacePosition.xyz);
-
-        tempShadowFactor /= 6.0f;
+        // tempShadowFactor = texture(uDepth[i], lightSpacePosition.xyz);
+        // zaki bi spisu eno vrstice ce jih lahko 20 
+        switch (i) {
+            case 0:
+                tempShadowFactor = texture(uDepth[0], lightSpacePosition.xyz);
+                break;
+            case 1:
+                tempShadowFactor = texture(uDepth[1], lightSpacePosition.xyz);
+                break;
+            case 2:
+                tempShadowFactor = texture(uDepth[2], lightSpacePosition.xyz);
+                break;
+            case 3:
+                tempShadowFactor = texture(uDepth[3], lightSpacePosition.xyz);
+                break;
+            case 4:
+                tempShadowFactor = texture(uDepth[4], lightSpacePosition.xyz);
+                break;
+            case 5:
+                tempShadowFactor = texture(uDepth[5], lightSpacePosition.xyz);
+                break;
+            default:
+                break;
+        }
 
         shadowFactor += tempShadowFactor;
 

@@ -43,8 +43,8 @@ export class LitRenderer extends BaseRenderer {
         const lights = scene.filter(node => node.getComponentOfType(Light));
 
         this.renderShadows(scene, lights);
-        // this.displayDebug();
         this.renderGeometry(scene, camera, lights);
+        // this.displayDebug(2);
     }
 
     renderShadows(scene, lights) {
@@ -84,7 +84,7 @@ export class LitRenderer extends BaseRenderer {
         }
     }
 
-    displayDebug() {
+    displayDebug(shadowBuffer) {
         const gl = this.gl;
 
         const buffer = WebGL.createBuffer(gl, {
@@ -118,7 +118,7 @@ export class LitRenderer extends BaseRenderer {
 
         const white = new ImageData(new Uint8ClampedArray([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 0, 255]), 2, 2);
 
-        const texture = this.shadowBuffers.depthTexture;
+        const texture = this.shadowBuffers[shadowBuffer].depthTexture;
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(uniforms.uTexture, 0);
@@ -163,8 +163,8 @@ export class LitRenderer extends BaseRenderer {
             const lightMatrix = mat4.mul(mat4.create(), lightProjectionMatrix, lightTransformMatrix);
             gl.uniformMatrix4fv(uniforms.uLightMatrix[i], false, lightMatrix);
             gl.activeTexture(gl.TEXTURE3 + i);
-            // console.log(uniforms)
-            gl.uniform1i(uniforms.uDepth[i], 3);
+            // console.log(gl.TEXTURE3 + i)
+            gl.uniform1i(uniforms.uDepth[i], 3 + i);
             // console.log(uniforms.uDepth);
             gl.bindTexture(gl.TEXTURE_2D, this.shadowBuffers[i].depthTexture);
             // console.log(this.shadowBuffers);
