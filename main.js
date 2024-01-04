@@ -19,17 +19,14 @@ if (dev) {
         Console.innerHTML += arguments[0] + "<br/>";
     }
     let logE = function () {
-        console.log("a");
         console.defaultError.apply(console, arguments);
         Console.innerHTML += arguments[0] + "<br/>";
     }
     let logW = function () {
-        console.log("a");
         console.defaultWarn.apply(console, arguments);
         Console.innerHTML += arguments[0] + "<br/>";
     }
     let logD = function () {
-        console.log("a");
         console.defaultDebug.apply(console, arguments);
         Console.innerHTML += arguments[0] + "<br/>";
     }
