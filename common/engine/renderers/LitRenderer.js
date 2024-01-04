@@ -34,7 +34,7 @@ export class LitRenderer extends BaseRenderer {
 
         this.shadowMapSize = 1024;
 
-        this.createShadowBuffer();
+        this.createShadowBuffers();
 
         // this.displayDebug();
     }
@@ -59,26 +59,28 @@ export class LitRenderer extends BaseRenderer {
             height: this.shadowMapSize,
         };
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.shadowBuffer.framebuffer);
-        gl.viewport(0, 0, size.width, size.height);
-
-        gl.clearDepth(1);
-        gl.clear(gl.DEPTH_BUFFER_BIT);
-
-        const { program, uniforms } = this.programs.renderShadows;
-        gl.useProgram(program);
-
         for (let i = 0; i < lights.length; i++) {
+
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.shadowBuffers[i].framebuffer);
+            gl.viewport(0, 0, size.width, size.height);
+
+            gl.clearDepth(1);
+            gl.clear(gl.DEPTH_BUFFER_BIT);
+
+            const { program, uniforms } = this.programs.renderShadows;
+            gl.useProgram(program);
+
             const shadowCamera = lights[i];
             const lightTransformMatrix = getGlobalViewMatrix(shadowCamera);
             const lightProjectionMatrix = getProjectionMatrix(shadowCamera);
             const lightMatrix = mat4.mul(mat4.create(), lightProjectionMatrix, lightTransformMatrix);
-            gl.uniformMatrix4fv(uniforms.uLightMatrix[i], false, lightMatrix);
-        }
+            gl.uniformMatrix4fv(uniforms.uLightMatrix, false, lightMatrix);
 
-        const modelMatrix = mat4.create();
-        for (const node of scene.children) {
-            this.renderNode(node, modelMatrix, uniforms);
+
+            const modelMatrix = mat4.create();
+            for (const node of scene.children) {
+                this.renderNode(node, modelMatrix, uniforms);
+            }
         }
     }
 
@@ -116,7 +118,7 @@ export class LitRenderer extends BaseRenderer {
 
         const white = new ImageData(new Uint8ClampedArray([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 0, 255]), 2, 2);
 
-        const texture = this.shadowBuffer.depthTexture;
+        const texture = this.shadowBuffers.depthTexture;
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.uniform1i(uniforms.uTexture, 0);
@@ -154,17 +156,18 @@ export class LitRenderer extends BaseRenderer {
         const viewMatrix = getGlobalViewMatrix(camera);
         const projectionMatrix = getProjectionMatrix(camera);
 
-        gl.activeTexture(gl.TEXTURE3);
-        // console.log(uniforms)
-        gl.uniform1i(uniforms.uDepth, 3);
-        gl.bindTexture(gl.TEXTURE_2D, this.shadowBuffer.depthTexture);
-
         for (let i = 0; i < lights.length; i++) {
             const shadowCamera = lights[i];
             const lightTransformMatrix = getGlobalViewMatrix(shadowCamera);
             const lightProjectionMatrix = getProjectionMatrix(shadowCamera);
             const lightMatrix = mat4.mul(mat4.create(), lightProjectionMatrix, lightTransformMatrix);
             gl.uniformMatrix4fv(uniforms.uLightMatrix[i], false, lightMatrix);
+            gl.activeTexture(gl.TEXTURE3 + i);
+            // console.log(uniforms)
+            gl.uniform1i(uniforms.uDepth[i], 3);
+            // console.log(uniforms.uDepth);
+            gl.bindTexture(gl.TEXTURE_2D, this.shadowBuffers[i].depthTexture);
+            // console.log(this.shadowBuffers);
         }
 
         gl.uniformMatrix4fv(uniforms.uViewMatrix, false, viewMatrix);
@@ -258,13 +261,16 @@ export class LitRenderer extends BaseRenderer {
         gl.bindVertexArray(null);
     }
 
-    createShadowBuffer() {
+    createShadowBuffers() {
         const gl = this.gl;
 
-        if (this.shadowBuffer) {
-            gl.deleteFramebuffer(this.shadowBuffer.framebuffer);
-            gl.deleteTexture(this.shadowBuffer.depthTexture);
+        if (this.shadowBuffers) {
+            for (const shadowBuffer of this.shadowBuffers) {
+                gl.deleteFramebuffer(shadowBuffer.framebuffer);
+                gl.deleteTexture(shadowBuffer.depthTexture);
+            }
         }
+        this.shadowBuffers = [];
 
         const size = {
             width: this.shadowMapSize,
@@ -278,29 +284,32 @@ export class LitRenderer extends BaseRenderer {
             wrapT: gl.CLAMP_TO_EDGE,
         };
 
-        const depthBuffer = gl.createRenderbuffer();
-        gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, size.width, size.height);
+        for (let i = 0; i < 6; i++) {
+            const depthBuffer = gl.createRenderbuffer();
+            gl.bindRenderbuffer(gl.RENDERBUFFER, depthBuffer);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, size.width, size.height);
 
-        const depthTexture = WebGL.createTexture(gl, {
-            ...size,
-            ...sampling,
-            format: gl.DEPTH_STENCIL,
-            iformat: gl.DEPTH24_STENCIL8,
-            type: gl.UNSIGNED_INT_24_8,
-        });
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
+            const depthTexture = WebGL.createTexture(gl, {
+                ...size,
+                ...sampling,
+                format: gl.DEPTH_STENCIL,
+                iformat: gl.DEPTH24_STENCIL8,
+                type: gl.UNSIGNED_INT_24_8,
+            });
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_COMPARE_MODE, gl.COMPARE_REF_TO_TEXTURE);
 
-        const framebuffer = gl.createFramebuffer();
-        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
+            const framebuffer = gl.createFramebuffer();
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.TEXTURE_2D, depthTexture, 0);
 
-        // gl.drawBuffers([]);
+            // gl.drawBuffers([]);
 
-        this.shadowBuffer = {
-            framebuffer,
-            depthTexture,
-        };
+            this.shadowBuffers[i] = {
+                framebuffer,
+                depthTexture,
+            };
+        }
+
     }
 
 }

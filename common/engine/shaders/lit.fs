@@ -8,7 +8,7 @@ precision mediump sampler2DShadow;
 uniform sampler2D uBaseTexture;
 uniform sampler2D uMetalnessTexture;
 uniform sampler2D uRoughnessTexture;
-uniform sampler2DShadow uDepth;
+uniform sampler2DShadow[LIGHT_COUNT] uDepth;
 uniform mat4[LIGHT_COUNT] uLightMatrix;
 // uniform mat4 uLightMatrix;
 
@@ -135,13 +135,24 @@ void main() {
     }
 
     float shadowFactor = 0.0f;
-    float tempShadowFactor;
+    float tempShadowFactor = 0.0f;
     for (int i = 0; i < LIGHT_COUNT; i++) {
         vec4 lightSpacePosition = uLightMatrix[i] * vec4(vPosition, 1);
         lightSpacePosition /= lightSpacePosition.w;
         lightSpacePosition.xyz = lightSpacePosition.xyz * 0.5f + 0.5f;
 
-        tempShadowFactor = texture(uDepth, lightSpacePosition.xyz);
+        // for (int j = 0; j < LIGHT_COUNT; j++) {
+        //     tempShadowFactor += texture(uDepth[j], lightSpacePosition.xyz);
+        // } // ne vem zakaj to ne dela
+        tempShadowFactor = texture(uDepth[0], lightSpacePosition.xyz);
+        tempShadowFactor += texture(uDepth[1], lightSpacePosition.xyz);
+        tempShadowFactor += texture(uDepth[2], lightSpacePosition.xyz);
+        tempShadowFactor += texture(uDepth[3], lightSpacePosition.xyz);
+        tempShadowFactor += texture(uDepth[4], lightSpacePosition.xyz);
+        tempShadowFactor += texture(uDepth[5], lightSpacePosition.xyz);
+
+        tempShadowFactor /= 6.0f;
+
         shadowFactor += tempShadowFactor;
 
         if (lightSpacePosition.z > 1.0f) {
