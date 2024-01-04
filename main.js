@@ -61,6 +61,7 @@ import { mat4 } from "./lib/gl-matrix-module.js";
 import { Physics } from "./common/engine/core/Physics.js";
 import { Dart } from "./common/components/Dart.js";
 import { Dartboard } from "./common/components/Dartboard.js";
+import { Balloon } from "./common/components/Balloon.js";
 
 //Create renderer
 const renderer = new LitRenderer(canvas);
@@ -94,7 +95,7 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 camera.isDynamic = true;
 camera.aabb = {
     min: [-0.2, -2, -0.2],
-    max: [0.2, 1, 0.2],
+    max: [0.2, 1.5, 0.2],
 };
 
 scene.traverse(node => {
@@ -112,7 +113,8 @@ calculates Axis Aliged Bounding Box:
 Axis Aligned: edges of bounding box are parallel to coordiante axes (It is aligned with global coordinate system)
 Bounding Box: 3D rectanguar enclosure that compeltly contains a set of objects.
 */
-const physics = new Physics(scene);
+let dartsLeft = [3];
+const physics = new Physics(scene, dartsLeft);
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
     if (!model) {
@@ -125,6 +127,10 @@ scene.traverse(node => {
 //Calculate Dart Board center
 const dartBoard = new Dartboard(gltfLoader.loadNode("Dartboard"));
 
+for(let i = 0; i < 6; i ++){
+    gltfLoader.loadNode("Balloon"+i).addComponent(new Balloon());
+}
+
 function update(t, dt) {
     scene.traverse(node => {
         for (const component of node.components) {
@@ -135,7 +141,7 @@ function update(t, dt) {
     physics.update(t, dt);
 }
 
-var loadedDarts = []; 
+ 
 function render() {
     //Render the scene
     renderer.render(scene, camera);
@@ -153,7 +159,6 @@ new UpdateSystem({ update, render }).start();
 //1. Load dart node for quick acces.
 await gltfLoader.load('common/models/dart/dart.gltf');
 const dartNode = gltfLoader.loadNode('darts_obj');
-//const dartNode = gltfLoader.loadNode("darts_obj");
 
 /*
 On click
@@ -162,15 +167,18 @@ On click
 4. Add node to the scene.
 */
 export function addDart(power) {
-    const dart = new Node();
-    const myDart = new Dart(camera.getComponentOfType(Transform), dartNode);
-    dart.addComponent(myDart.transform);
-    dart.addComponent(dartNode.getComponentOfType(Model));
-    dart.addComponent(myDart);
-    dart.aabb = myDart.calculateAABB();
-    dart.isDynamic = true;
-    scene.addChild(dart);
-    physics.scene = scene;
+    if(dartsLeft[0] > 0){
+        const dart = new Node();
+        const myDart = new Dart(camera.getComponentOfType(Transform), dartNode, power);
+        dart.addComponent(myDart.transform);
+        dart.addComponent(dartNode.getComponentOfType(Model));
+        dart.addComponent(myDart);
+        dart.aabb = myDart.calculateAABB();
+        dart.isDynamic = true;
+        scene.addChild(dart);
+        physics.scene = scene;
+        dartsLeft[0]--;
+    }
 }
 
 //Event listeners:

@@ -2,17 +2,20 @@ import { Transform, Model } from "../engine/core.js";
 import { vec3, mat4, quat } from "../../lib/gl-matrix-module.js";
 
 export class Dart {
-  constructor(camera, dartNode) {
+  constructor(camera, dartNode, power) {
     this.cameraTransform = camera;
     this.dartNode = dartNode;
     this.transform =  null;
   
+    this.speed = power/30 + 0.9;
     this.velocity = [0, 0, 0];
     this.acceleration = [0, -0.01, 0];
     this.rotationSpeed = -0.01;
     this.rotationAxisX = [0, 0, 1];
     this.rotationAxisY = [1, 0, 0];
     this.stop = false;
+
+    this.pickable = false;
 
     this.transDart();
   }
@@ -30,7 +33,7 @@ export class Dart {
     
       const forwardVector = [0, 0, -1];
       vec3.transformQuat(forwardVector, forwardVector, dartTransform.rotation);
-      this.velocity = vec3.scale(forwardVector, forwardVector, 1);
+      this.velocity = vec3.scale(forwardVector, forwardVector, this.speed);
   }
   
   calculateAABB(){
@@ -55,13 +58,17 @@ export class Dart {
       this.transform.translation[0] += this.velocity[0] * dt;
       this.transform.translation[1] += this.velocity[1] * dt;
       this.transform.translation[2] += this.velocity[2] * dt;
-
+      /*
+      let rotationAngleX = this.speed*dt;
+      let rotationQuatX = quat.setAxisAngle(quat.create(), this.rotationAxisX, rotationAngleX);
+      quat.multiply(this.transform.rotation, this.transform.rotation, rotationQuatX);
+      */
       let rotationAngleY = this.rotationSpeed*dt;
       let rotationQuatY = quat.setAxisAngle(quat.create(), this.rotationAxisY, rotationAngleY);
       quat.multiply(this.transform.rotation, this.transform.rotation, rotationQuatY);
+      
     };
   }
-
 }
 
 
