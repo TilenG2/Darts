@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="common/style.css">
     <script src="lib/gl-matrix-min.js"></script>
     <script type="module" src="./main.js">
-        let allowMove = false
+        let allowMove = false;
+        let dev = false;
     </script>
     <script src="./ui.js"></script>
 </head>
@@ -21,12 +22,16 @@
                 dart is soo easy, we made it harder. You are welcome. Drink from the glass on the counter, and the more you
                 drink, more dizzy you will become. Good luck!</p>
             <p id="imp">The most important: have fun!</p>
+            <p id="howToPlay">Made by: Sandi Cejan, Tilen Gabršček in Dušan Jovanović</p>
             <button id="startButton" onclick="start()">Let's play</button>
         </div>
     </div>
     <p id="points">301 points</p>
     <div class="fullscreen">
         <canvas></canvas>
+    </div>
+    <div id="consoleD" hidden="hidden">
+        <p id="console">DEV MODE ACTIVE<br/></p>
     </div>
 </body>
 </html>

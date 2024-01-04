@@ -5,7 +5,23 @@ import {
     Model,
     Mesh
 } from "./common/engine/core.js";
-
+const canvas = document.querySelector("canvas");
+let urlParams = new URLSearchParams(window.location.search).get('dev');
+let dev = urlParams == "true";
+if (dev) {
+    let log = function () {
+        console.defaultLog.apply(console, arguments);
+        Console.innerHTML += arguments[0] + "<br/>";
+    }
+    document.getElementById("consoleD").hidden = false;
+    let Console = document.getElementById("console");
+    console.defaultLog = console.log.bind(console);
+    console.log = log;
+    console.error = log;
+    console.warn = log;
+    document.getElementById("braker").hidden = true;
+    allowMove = true;
+}
 import { GLTFLoader } from "./common/engine/loaders/GLTFLoader.js";
 import { LitRenderer } from "./common/engine/renderers/LitRenderer.js";
 import { ResizeSystem } from "./common/engine/systems/ResizeSystem.js";
@@ -27,7 +43,6 @@ import { Dart } from "./Dart.js";
 import { Dartboard } from "./Dartboard.js";
 
 //Create renderer
-const canvas = document.querySelector("canvas");
 const renderer = new LitRenderer(canvas);
 await renderer.initialize();
 
@@ -64,10 +79,10 @@ camera.aabb = {
 
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
-    if(!model){
+    if (!model) {
         return;
     }
-    
+
     node.isStatic = true;
 });
 

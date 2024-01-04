@@ -106,3 +106,14 @@ html {
     height: 100vh;
     position: absolute;
 }
+#consoleD{
+    position: fixed;
+    right: 30px;
+    width: 30%;
+    height: 100%;
+    top: 100px;
+}
+#consoleD p{
+    text-align: right;
+    color: red;
+}
