@@ -106,3 +106,29 @@ html {
     height: 100vh;
     position: absolute;
 }
+#consoleD{
+    position: fixed;
+    right: 30px;
+    width: 30%;
+    height: 100%;
+    top: 100px;
+}
+#consoleD p{
+    text-align: right;
+    color: red;
+}
+#ThrowStrength{
+    background-image: linear-gradient(to top, #323f00 , yellow);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+}
+#ThrowDiv{
+    position: fixed;
+    left: 60%;
+    top: 40%;
+    height: 100px;
+    width: 30px;
+    border: 1px solid black;
+}

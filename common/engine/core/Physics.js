@@ -1,11 +1,16 @@
+import { Dart } from '../../components/Dart.js';
+import { Balloon } from '../../components/Balloon.js';
 import { vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 import { getGlobalModelMatrix } from './SceneUtils.js';
 import { Transform } from './Transform.js';
+import { Camera } from './Camera.js';
+let balloonPopSound = new Audio("common/audio/balloon.wav");
 
 export class Physics {
 
-    constructor(scene) {
+    constructor(scene, dartsLeft) {
         this.scene = scene;
+        this.dartsLeft = dartsLeft;
     }
     /*
     Traverses trough all nodes in the scene, checks if any Dynamic 
@@ -15,14 +20,14 @@ export class Physics {
         this.scene.traverse(node => {
             if (node.isDynamic) {
                 this.scene.traverse(other => {
-                    if (node !== other && other.isStatic) {
+                    if (node !== other && (other.isStatic || other.getComponentOfType(Dart)?.pickable)) {
                         this.resolveCollision(node, other);
                     }
                 });
             }
         });
     }
-
+ //5.Physics: scene.traverse{if (dart) (if dart is coliding) node.isDynamic = false}
     /*
     Checks if two intervals defined by their minimum and maximum values intesect.
     true = intesection
@@ -112,8 +117,23 @@ export class Physics {
         if (!transform) {
             return;
         }
-
+        
         vec3.add(transform.translation, transform.translation, minDirection);
+
+        if(a.getComponentOfType(Dart) && minDirection){
+            if(b.getComponentOfType(Balloon)){
+                this.scene.removeChild(b);
+                balloonPopSound.play();
+            }else{
+                a.getComponentOfType(Dart).stop = true;
+                a.getComponentOfType(Dart).pickable = true;
+            }
+        }
+
+        if(a.getComponentOfType(Camera) && b.getComponentOfType(Dart)?.pickable && minDirection){
+            this.scene.removeChild(b);
+            this.dartsLeft[0]++;
+        }
     }
 
 }

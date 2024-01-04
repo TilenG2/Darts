@@ -1,4 +1,4 @@
-import { Light } from '../../../Light.js';
+import { Light } from '../../components/Light.js';
 import {
     Accessor,
     Camera,
