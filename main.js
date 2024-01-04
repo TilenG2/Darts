@@ -21,8 +21,10 @@ import {
     calculateAxisAlignedBoundingBox,
     mergeAxisAlignedBoundingBoxes
 } from "./common/engine/core/MeshUtils.js";
-
+import { mat4 } from "./lib/gl-matrix-module.js";
 import { Physics } from "./common/engine/core/Physics.js";
+import { Dart } from "./Dart.js";
+import { Dartboard } from "./Dartboard.js";
 
 //Create renderer
 const canvas = document.querySelector("canvas");
@@ -32,7 +34,6 @@ await renderer.initialize();
 //Load scene
 const gltfLoader = new GLTFLoader();
 await gltfLoader.load("common/models/prostor/prostor.gltf"); //GLTFSEperate
-
 const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
 //Setup camera
@@ -79,13 +80,15 @@ Bounding Box: 3D rectanguar enclosure that compeltly contains a set of objects.
 const physics = new Physics(scene);
 scene.traverse(node => {
     const model = node.getComponentOfType(Model);
-    if ((!model) || (!node.isStatic)) {
+    if (!model) {
         return;
     }
     const boxes = model.primitives.map(primitive => calculateAxisAlignedBoundingBox(primitive.mesh));
     node.aabb = mergeAxisAlignedBoundingBoxes(boxes);
 });
 
+//Calculate Dart Board center
+const dartBoard = new Dartboard(gltfLoader.loadNode("Dartboard"));
 
 function update(t, dt) {
     scene.traverse(node => {
@@ -97,9 +100,11 @@ function update(t, dt) {
     physics.update(t, dt);
 }
 
+var loadedDarts = []; 
 function render() {
     //Render the scene
     renderer.render(scene, camera);
+    
 }
 
 function resize({ displaySize: { width, height } }) {
@@ -108,3 +113,68 @@ function resize({ displaySize: { width, height } }) {
 
 new ResizeSystem({ canvas, resize }).start();
 new UpdateSystem({ update, render }).start();
+
+//Dart loading:
+//1. Load dart node for quick acces.
+await gltfLoader.load('common/models/dart/dart.gltf');
+const dartNode = gltfLoader.loadNode('darts_obj');
+//const dartNode = gltfLoader.loadNode("darts_obj");
+
+/*
+On click
+2. Create new Node
+3. Create new Dart Object and add it to the Node
+4. Add node to the scene.
+*/
+function addDart() {
+    const dart = new Node();
+    const myDart = new Dart(camera.getComponentOfType(Transform), dartNode);
+    dart.addComponent(myDart.transform);
+    dart.addComponent(dartNode.getComponentOfType(Model));
+    dart.addComponent(myDart);
+    dart.aabb = myDart.calculateAABB();
+    dart.isDynamic = true;
+    scene.addChild(dart);
+    physics.scene = scene;
+}
+
+//Event listeners:
+document.addEventListener("click", addDart);
+
+
+
+/*
+const dartScene = gltfLoader.loadScene(gltfLoader.defaultScene);
+
+transDart() {
+      // Set Dart scene's position to the camera's position
+      const cameraTransform = this.camera.getComponentOfType(Transform);
+      const sc = 0.1;
+      this.dartScene.traverse(node => {
+        if(node.getComponentOfType(Transform)){
+          let dartTransform = node.getComponentOfType(Transform);
+
+          dartTransform.translation = [
+            cameraTransform.translation[0],
+            cameraTransform.translation[1],
+            cameraTransform.translation[2],
+          ];
+          
+          dartTransform.rotation = [
+            cameraTransform.rotation[0],
+            cameraTransform.rotation[1],
+            cameraTransform.rotation[2],
+            cameraTransform.rotation[3]
+          ];
+          
+          dartTransform.scale = [sc, sc, sc];
+
+          this.transform = dartTransform;
+
+          const forwardVector = [0, 0, -1];
+          vec3.transformQuat(forwardVector, forwardVector, dartTransform.rotation);
+          this.velocity = vec3.scale(forwardVector, forwardVector, 1);
+        }
+      });
+  }
+*/

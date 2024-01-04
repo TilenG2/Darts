@@ -1,3 +1,4 @@
+import { Dart } from '../../../Dart.js';
 import { vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 import { getGlobalModelMatrix } from './SceneUtils.js';
 import { Transform } from './Transform.js';
@@ -16,13 +17,18 @@ export class Physics {
             if (node.isDynamic) {
                 this.scene.traverse(other => {
                     if (node !== other && other.isStatic) {
-                        this.resolveCollision(node, other);
+                        if(node.getComponentOfType(Dart)){
+                            this.resolveCollision(node, other);
+                        }else{
+                            this.resolveCollision(node, other);
+                        }
+
                     }
                 });
             }
         });
     }
-
+ //5.Physics: scene.traverse{if (dart) (if dart is coliding) node.isDynamic = false}
     /*
     Checks if two intervals defined by their minimum and maximum values intesect.
     true = intesection
@@ -112,8 +118,14 @@ export class Physics {
         if (!transform) {
             return;
         }
-
+        
         vec3.add(transform.translation, transform.translation, minDirection);
+        if(a.getComponentOfType(Dart)){
+            if(minDirection){
+                a.getComponentOfType(Dart).stop = true;
+            };
+        }
+        
     }
 
 }
