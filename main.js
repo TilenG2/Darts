@@ -5,22 +5,45 @@ import {
     Model,
     Mesh
 } from "./common/engine/core.js";
+import {start} from "./ui.js";
 const canvas = document.querySelector("canvas");
 let urlParams = new URLSearchParams(window.location.search).get('dev');
 let dev = urlParams == "true";
+export let allowMove = false;
+export function setAllowMove(value) {
+    allowMove = value;
+}
 if (dev) {
     let log = function () {
         console.defaultLog.apply(console, arguments);
+        Console.innerHTML += arguments[0] + "<br/>";
+    }
+    let logE = function () {
+        console.log("a");
+        console.defaultError.apply(console, arguments);
+        Console.innerHTML += arguments[0] + "<br/>";
+    }
+    let logW = function () {
+        console.log("a");
+        console.defaultWarn.apply(console, arguments);
+        Console.innerHTML += arguments[0] + "<br/>";
+    }
+    let logD = function () {
+        console.log("a");
+        console.defaultDebug.apply(console, arguments);
         Console.innerHTML += arguments[0] + "<br/>";
     }
     document.getElementById("consoleD").hidden = false;
     let Console = document.getElementById("console");
     console.defaultLog = console.log.bind(console);
     console.log = log;
-    console.error = log;
-    console.warn = log;
-    document.getElementById("braker").hidden = true;
-    allowMove = true;
+    console.defaultError = console.error.bind(console);
+    console.error = logE;
+    console.defaultWarn = console.warn.bind(console);
+    console.warn = logW;
+    console.defaultDebug = console.debug.bind(console);
+    console.debug = logD;
+    start();
 }
 import { GLTFLoader } from "./common/engine/loaders/GLTFLoader.js";
 import { LitRenderer } from "./common/engine/renderers/LitRenderer.js";
@@ -28,7 +51,7 @@ import { ResizeSystem } from "./common/engine/systems/ResizeSystem.js";
 import { UpdateSystem } from "./common/engine/systems/UpdateSystem.js";
 import { TurntableController } from "./common/engine/controllers/TurntableController.js";
 import { LinearAnimator } from "./common/engine/animators/LinearAnimator.js";
-import { Light } from "./Light.js"
+import { Light } from "./common/components/Light.js"
 
 import { FirstPersonController } from "./common/engine/controllers/FirstPersonController.js";
 
@@ -39,8 +62,8 @@ import {
 } from "./common/engine/core/MeshUtils.js";
 import { mat4 } from "./lib/gl-matrix-module.js";
 import { Physics } from "./common/engine/core/Physics.js";
-import { Dart } from "./Dart.js";
-import { Dartboard } from "./Dartboard.js";
+import { Dart } from "./common/components/Dart.js";
+import { Dartboard } from "./common/components/Dartboard.js";
 
 //Create renderer
 const renderer = new LitRenderer(canvas);
@@ -141,7 +164,7 @@ On click
 3. Create new Dart Object and add it to the Node
 4. Add node to the scene.
 */
-function addDart() {
+export function addDart(power) {
     const dart = new Node();
     const myDart = new Dart(camera.getComponentOfType(Transform), dartNode);
     dart.addComponent(myDart.transform);
@@ -154,7 +177,6 @@ function addDart() {
 }
 
 //Event listeners:
-document.addEventListener("click", addDart);
 
 
 

@@ -1,4 +1,4 @@
-import { getGlobalModelMatrix } from "./common/engine/core/SceneUtils.js";
+import { getGlobalModelMatrix } from "../engine/core/SceneUtils.js";
 export class Dartboard {
   constructor (dartBoard){
     this.dartBoard = dartBoard;

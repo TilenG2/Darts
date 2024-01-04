@@ -1,5 +1,5 @@
-import { Transform, Model } from "./common/engine/core.js";
-import { vec3, mat4, quat } from "./lib/gl-matrix-module.js";
+import { Transform, Model } from "../engine/core.js";
+import { vec3, mat4, quat } from "../../lib/gl-matrix-module.js";
 
 export class Dart {
   constructor(camera, dartNode) {

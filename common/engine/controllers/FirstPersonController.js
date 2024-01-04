@@ -1,6 +1,7 @@
 import { quat, vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 
 import { Transform } from '../core/Transform.js';
+import { allowMove } from '../../../main.js';
 
 export class FirstPersonController {
 

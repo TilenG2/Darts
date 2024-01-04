@@ -11,7 +11,7 @@ import {
     getProjectionMatrix,
     getModels,
 } from '../core/SceneUtils.js';
-import { Light } from "../../../Light.js"
+import { Light } from "../../components/Light.js"
 
 const lightIntensityMultyplyer = 0.0001; //bling
 // const lightIntensityMultyplyer = 0.0012; // lambert

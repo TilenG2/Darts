@@ -1,4 +1,4 @@
-import { Dart } from '../../../Dart.js';
+import { Dart } from '../../components/Dart.js';
 import { vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 import { getGlobalModelMatrix } from './SceneUtils.js';
 import { Transform } from './Transform.js';

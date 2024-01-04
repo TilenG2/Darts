@@ -11,7 +11,6 @@
         let allowMove = false;
         let dev = false;
     </script>
-    <script src="./ui.js"></script>
 </head>
 
 <body>
@@ -23,15 +22,19 @@
                 drink, more dizzy you will become. Good luck!</p>
             <p id="imp">The most important: have fun!</p>
             <p id="howToPlay">Made by: Sandi Cejan, Tilen Gabršček in Dušan Jovanović</p>
-            <button id="startButton" onclick="start()">Let's play</button>
+            <button id="startButton">Let's play</button>
         </div>
     </div>
     <p id="points">301 points</p>
     <div class="fullscreen">
         <canvas></canvas>
+        <div id="ThrowDiv" hidden>
+            <div id="ThrowStrength"></div>
+        </div>
     </div>
     <div id="consoleD" hidden="hidden">
         <p id="console">DEV MODE ACTIVE<br/></p>
     </div>
+    <script src="./ui.js" type="module"></script>
 </body>
 </html>
