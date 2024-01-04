@@ -110,18 +110,18 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"Black",
-			"uri":"Black.png"
+			"name":"black",
+			"uri":"black.png"
 		},
 		{
 			"mimeType":"image/png",
-			"name":"Red",
-			"uri":"Red.png"
+			"name":"red",
+			"uri":"red.png"
 		},
 		{
 			"mimeType":"image/png",
-			"name":"Grey",
-			"uri":"Grey.png"
+			"name":"grey",
+			"uri":"grey.png"
 		}
 	],
 	"accessors":[
