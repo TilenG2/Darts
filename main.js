@@ -49,7 +49,7 @@ import { UpdateSystem } from "./common/engine/systems/UpdateSystem.js";
 import { TurntableController } from "./common/engine/controllers/TurntableController.js";
 import { LinearAnimator } from "./common/engine/animators/LinearAnimator.js";
 import { Light } from "./common/components/Light.js"
-
+import { getGlobalModelMatrix } from "./common/engine/core/SceneUtils.js";
 import { FirstPersonController } from "./common/engine/controllers/FirstPersonController.js";
 
 //For collision
@@ -93,6 +93,7 @@ camera.addComponent(new FirstPersonController(camera, canvas));
 
 //Collision
 camera.isDynamic = true;
+
 camera.aabb = {
     min: [-0.2, -2, -0.2],
     max: [0.2, 1.5, 0.2],
@@ -125,8 +126,16 @@ scene.traverse(node => {
 });
 
 //Calculate Dart Board center
-const dartBoard = new Dartboard(gltfLoader.loadNode("Dartboard"));
+const pointsDisplay = document.getElementById("points");
+let points = [0];
+export function updatePointsDisplay(){
+    pointsDisplay.textContent = points[0] + " points";
+}
+const darboardNode = gltfLoader.loadNode("Dartboard");
+const dartBoard = new Dartboard(getGlobalModelMatrix(darboardNode), points);
+darboardNode.addComponent(dartBoard);
 
+//Balloons
 for(let i = 0; i < 6; i ++){
     gltfLoader.loadNode("Balloon"+i).addComponent(new Balloon());
 }
@@ -180,43 +189,3 @@ export function addDart(power) {
         dartsLeft[0]--;
     }
 }
-
-//Event listeners:
-
-
-
-/*
-const dartScene = gltfLoader.loadScene(gltfLoader.defaultScene);
-
-transDart() {
-      // Set Dart scene's position to the camera's position
-      const cameraTransform = this.camera.getComponentOfType(Transform);
-      const sc = 0.1;
-      this.dartScene.traverse(node => {
-        if(node.getComponentOfType(Transform)){
-          let dartTransform = node.getComponentOfType(Transform);
-
-          dartTransform.translation = [
-            cameraTransform.translation[0],
-            cameraTransform.translation[1],
-            cameraTransform.translation[2],
-          ];
-          
-          dartTransform.rotation = [
-            cameraTransform.rotation[0],
-            cameraTransform.rotation[1],
-            cameraTransform.rotation[2],
-            cameraTransform.rotation[3]
-          ];
-          
-          dartTransform.scale = [sc, sc, sc];
-
-          this.transform = dartTransform;
-
-          const forwardVector = [0, 0, -1];
-          vec3.transformQuat(forwardVector, forwardVector, dartTransform.rotation);
-          this.velocity = vec3.scale(forwardVector, forwardVector, 1);
-        }
-      });
-  }
-*/

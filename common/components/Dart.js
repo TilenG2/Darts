@@ -7,16 +7,16 @@ export class Dart {
     this.dartNode = dartNode;
     this.transform =  null;
   
-    this.speed = power/30 + 0.9;
+    this.speed = power/20 + 5;
     this.velocity = [0, 0, 0];
-    this.acceleration = [0, -0.01, 0];
-    this.rotationSpeed = -0.01;
-    this.rotationAxisX = [0, 0, 1];
-    this.rotationAxisY = [1, 0, 0];
+    this.acceleration = [0, -0.3, 0];
+    this.rotationSpeed = -0.1;
+    this.rotationAxisX = [1, 0, 0];
+    this.rotationAxisZ = [0, 0, 1];
     this.stop = false;
 
     this.pickable = false;
-
+    this.calculate = true;
     this.transDart();
   }
 
@@ -59,51 +59,22 @@ export class Dart {
       this.transform.translation[1] += this.velocity[1] * dt;
       this.transform.translation[2] += this.velocity[2] * dt;
       /*
-      let rotationAngleX = this.speed*dt;
+      let rotationAngleZ = this.speed*dt;
+      let rotationQuatZ = quat.setAxisAngle(quat.create(), this.rotationAxisZ, rotationAngleZ);
+      quat.multiply(this.transform.rotation, this.transform.rotation, rotationQuatZ);
+      */
+      let rotationAngleX = this.rotationSpeed*dt;
       let rotationQuatX = quat.setAxisAngle(quat.create(), this.rotationAxisX, rotationAngleX);
       quat.multiply(this.transform.rotation, this.transform.rotation, rotationQuatX);
-      */
-      let rotationAngleY = this.rotationSpeed*dt;
-      let rotationQuatY = quat.setAxisAngle(quat.create(), this.rotationAxisY, rotationAngleY);
-      quat.multiply(this.transform.rotation, this.transform.rotation, rotationQuatY);
       
     };
   }
-}
 
-
-/*
-
-// na začetek loadanja igre
-    2-4 click
-    1. load('./common/models/dart/dart.gltf').loadNode("darts_obj");
-    2. new Node()
-    3. to node addComponent(Dart);
-    4. scene.addChild(Node)
-    //5.Physics: scene.traverse{if (dart) (if dart is coliding) node.isDynamic = false}
-    
-
-direktno na mesh povezi aabb za dart da ga ne rabs vedno na novo narest
-
-TargetArea {
-  radiusRange: [0.1, 2.2]
-  angle.range: [0.0123, o.234]
-  2pi/20
-  +-2pi/40
-  isPointinsied(x,y){
-
+  tip(){
+    let normalVelocity = vec3.create();
+    vec3.normalize(normalVelocity, this.velocity);
+    const x = this.transform.translation[0] + this.velocity[0]*0.02;
+    const y = this.transform.translation[1] + this.velocity[1]*0.02;
+    return { x, y };
   }
 }
-
-
-*/
-
-
-/*const alignedWithNegativeY = vec3.dot([0, this.transform.rotation[1], 0], [0, -1, 0] > 0.99);
-      if(!alignedWithNegativeY){
-        const rotationAngle = this.rotationSpeed * dt;
-        const rotation = quat.create();
-        quat.rotateY(rotation, rotation, rotationAngle);
-        this.transform.rotation = rotation;
-      };*/
-      //this.resolveCollisions();

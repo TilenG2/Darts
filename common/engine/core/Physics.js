@@ -1,5 +1,6 @@
 import { Dart } from '../../components/Dart.js';
 import { Balloon } from '../../components/Balloon.js';
+import { Dartboard } from '../../components/Dartboard.js';
 import { vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 import { getGlobalModelMatrix } from './SceneUtils.js';
 import { Transform } from './Transform.js';
@@ -20,7 +21,7 @@ export class Physics {
         this.scene.traverse(node => {
             if (node.isDynamic) {
                 this.scene.traverse(other => {
-                    if (node !== other && (other.isStatic || other.getComponentOfType(Dart)?.pickable)) {
+                    if (node !== other && (other.isStatic || (node.getComponentOfType(Camera) && other.getComponentOfType(Dart)?.pickable))) {
                         this.resolveCollision(node, other);
                     }
                 });
@@ -124,6 +125,15 @@ export class Physics {
             if(b.getComponentOfType(Balloon)){
                 this.scene.removeChild(b);
                 balloonPopSound.play();
+            }else if(b.getComponentOfType(Dartboard)){
+                a.getComponentOfType(Dart).stop = true;
+                const myDart = a.getComponentOfType(Dart);
+                if(myDart.calculate){
+                    const myDartboard = b.getComponentOfType(Dartboard);
+                    myDartboard.calculatePoints(myDart.tip());
+                    myDart.calculate = false;
+                }          
+                a.getComponentOfType(Dart).pickable = true;
             }else{
                 a.getComponentOfType(Dart).stop = true;
                 a.getComponentOfType(Dart).pickable = true;
@@ -134,6 +144,7 @@ export class Physics {
             this.scene.removeChild(b);
             this.dartsLeft[0]++;
         }
+
     }
 
 }
