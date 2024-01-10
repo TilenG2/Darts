@@ -74,7 +74,14 @@ await gltfLoader.load("common/models/prostor/prostor.gltf"); //GLTFSEperate
 const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
 const animatedLight = gltfLoader.loadNode("Light4");
-animatedLight.addComponent(new LightAnimation(animatedLight));
+animatedLight.addComponent(new LightAnimation(animatedLight, {
+    swing: true,
+}));
+
+const animatedLight2 = gltfLoader.loadNode("Light5");
+animatedLight2.addComponent(new LightAnimation(animatedLight2, {
+    flicker: true,
+}));
 
 //Setup camera
 const camera = gltfLoader.loadNode("Camera");
