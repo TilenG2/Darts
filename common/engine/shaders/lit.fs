@@ -34,6 +34,7 @@ in vec2 vTexCoord;
 out vec4 oColor;
 
 float lightCurve = 6.0f;
+float shadowOfset = 0.0001f;
 
 vec3 F_Schlick(vec3 f0, vec3 f90, float VdotH) {
     return f0 + (f90 - f0) * pow(clamp(1.0f - VdotH, 0.0f, 1.0f), 5.0f);
@@ -130,58 +131,54 @@ vec3 getIlumination(Light light) {
 
 void main() {
     vec3 ill = vec3(0);
-    for (int i = 0; i < LIGHT_COUNT; i++) {
-        ill += getIlumination(uLights[i]);
-    }
 
-    float shadowFactor = 0.0f;
-    float tempShadowFactor = 0.0f;
     for (int i = 0; i < LIGHT_COUNT; i++) {
+        float shadowFactor;
         vec4 lightSpacePosition = uLightMatrix[i] * vec4(vPosition, 1);
         lightSpacePosition /= lightSpacePosition.w;
         lightSpacePosition.xyz = lightSpacePosition.xyz * 0.5f + 0.5f;
+        lightSpacePosition.z = lightSpacePosition.z - shadowOfset;
 
-        // tempShadowFactor = texture(uDepth[i], lightSpacePosition.xyz);
+        // shadowFactor = texture(uDepth[i], lightSpacePosition.xyz);
         // zaki bi spisu eno vrstice ce jih lahko 20 
         switch (i) {
             case 0:
-                tempShadowFactor = texture(uDepth[0], lightSpacePosition.xyz);
+                shadowFactor = texture(uDepth[0], lightSpacePosition.xyz);
                 break;
             case 1:
-                tempShadowFactor = texture(uDepth[1], lightSpacePosition.xyz);
+                shadowFactor = texture(uDepth[1], lightSpacePosition.xyz);
                 break;
             case 2:
-                tempShadowFactor = texture(uDepth[2], lightSpacePosition.xyz);
+                shadowFactor = texture(uDepth[2], lightSpacePosition.xyz);
                 break;
             case 3:
-                tempShadowFactor = texture(uDepth[3], lightSpacePosition.xyz);
+                shadowFactor = texture(uDepth[3], lightSpacePosition.xyz);
                 break;
             case 4:
-                tempShadowFactor = texture(uDepth[4], lightSpacePosition.xyz);
+                shadowFactor = texture(uDepth[4], lightSpacePosition.xyz);
                 break;
             case 5:
-                tempShadowFactor = texture(uDepth[5], lightSpacePosition.xyz);
+                shadowFactor = texture(uDepth[5], lightSpacePosition.xyz);
                 break;
             default:
                 break;
         }
 
-        shadowFactor += tempShadowFactor;
-
         if (lightSpacePosition.z > 1.0f) {
             shadowFactor = 0.0f;
-            break;
+        }
+        if (lightSpacePosition.x < 0.0f || lightSpacePosition.x > 1.0f || lightSpacePosition.y < 0.0f || lightSpacePosition.y > 1.0f) {
+            shadowFactor = 0.0f;
         }
 
-        if (lightSpacePosition.x < 0.0f || lightSpacePosition.x > 1.0f || lightSpacePosition.y < 0.0f || lightSpacePosition.y > 1.0f) {
-            shadowFactor -= tempShadowFactor;
-        }
+        shadowFactor = mix(0.3f, 1.0f, shadowFactor);
+
+        ill += getIlumination(uLights[i]) * shadowFactor;
+
     }
     // vec4 baseColor = texture(uBaseTexture, vTexCoord);
     // oColor = vec4(uBaseFactor, 1) * baseColor * vec4(ill, 1);
 
-    shadowFactor = shadowFactor * 0.5f + 0.5f;
-
-    vec3 finalColor = ill * shadowFactor;
+    vec3 finalColor = ill;
     oColor = vec4(linearTosRGB(finalColor), 1);
 }

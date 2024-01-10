@@ -5,7 +5,7 @@ import {
     Model,
     Mesh
 } from "./common/engine/core.js";
-import {start} from "./ui.js";
+import { start } from "./ui.js";
 const canvas = document.querySelector("canvas");
 let urlParams = new URLSearchParams(window.location.search).get('dev');
 let dev = urlParams == "true";
@@ -62,6 +62,7 @@ import { Physics } from "./common/engine/core/Physics.js";
 import { Dart } from "./common/components/Dart.js";
 import { Dartboard } from "./common/components/Dartboard.js";
 import { Balloon } from "./common/components/Balloon.js";
+import { LightAnimation } from "./common/components/LightAnimation.js";
 
 //Create renderer
 const renderer = new LitRenderer(canvas);
@@ -71,6 +72,9 @@ await renderer.initialize();
 const gltfLoader = new GLTFLoader();
 await gltfLoader.load("common/models/prostor/prostor.gltf"); //GLTFSEperate
 const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
+
+const animatedLight = gltfLoader.loadNode("Light4");
+animatedLight.addComponent(new LightAnimation(animatedLight));
 
 //Setup camera
 const camera = gltfLoader.loadNode("Camera");
@@ -108,6 +112,8 @@ scene.traverse(node => {
     node.isStatic = true;
 });
 
+
+
 /*
 For all nodes that have isStatic and that are model,
 calculates Axis Aliged Bounding Box:
@@ -128,7 +134,7 @@ scene.traverse(node => {
 //Calculate Dart Board center
 const pointsDisplay = document.getElementById("points");
 let points = [0];
-export function updatePointsDisplay(){
+export function updatePointsDisplay() {
     pointsDisplay.textContent = points[0] + " points";
 }
 const darboardNode = gltfLoader.loadNode("Dartboard");
@@ -136,8 +142,8 @@ const dartBoard = new Dartboard(getGlobalModelMatrix(darboardNode), points);
 darboardNode.addComponent(dartBoard);
 
 //Balloons
-for(let i = 0; i < 6; i ++){
-    gltfLoader.loadNode("Balloon"+i).addComponent(new Balloon());
+for (let i = 0; i < 6; i++) {
+    gltfLoader.loadNode("Balloon" + i).addComponent(new Balloon());
 }
 
 function update(t, dt) {
@@ -150,11 +156,11 @@ function update(t, dt) {
     physics.update(t, dt);
 }
 
- 
+
 function render() {
     //Render the scene
     renderer.render(scene, camera);
-    
+
 }
 
 function resize({ displaySize: { width, height } }) {
@@ -176,7 +182,7 @@ On click
 4. Add node to the scene.
 */
 export function addDart(power) {
-    if(dartsLeft[0] > 0){
+    if (dartsLeft[0] > 0) {
         const dart = new Node();
         const myDart = new Dart(camera.getComponentOfType(Transform), dartNode, power);
         dart.addComponent(myDart.transform);
