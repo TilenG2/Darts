@@ -119,8 +119,6 @@ scene.traverse(node => {
     node.isStatic = true;
 });
 
-
-
 /*
 For all nodes that have isStatic and that are model,
 calculates Axis Aliged Bounding Box:
@@ -163,6 +161,14 @@ function update(t, dt) {
     physics.update(t, dt);
 }
 
+//Dart Plate
+let plate = gltfLoader.loadNode("Cube.015");
+plate.aabb = {
+    max: [2.3, 2, 1.0000004768371582],
+    min: [-0.9999998807907104, -0.9999999403953552, -0.999999463558197]
+};
+plate.isStatic = false;
+plate.isPlate = true;
 
 function render() {
     //Render the scene
@@ -201,4 +207,8 @@ export function addDart(power) {
         physics.scene = scene;
         dartsLeft[0]--;
     }
+}
+
+export function resetDarts(){
+    dartsLeft[0] = 3;
 }

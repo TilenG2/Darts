@@ -5,6 +5,7 @@ import { vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 import { getGlobalModelMatrix } from './SceneUtils.js';
 import { Transform } from './Transform.js';
 import { Camera } from './Camera.js';
+import { resetDarts } from '../../../main.js';
 let balloonPopSound = new Audio("common/audio/balloon.wav");
 
 export class Physics {
@@ -21,7 +22,7 @@ export class Physics {
         this.scene.traverse(node => {
             if (node.isDynamic) {
                 this.scene.traverse(other => {
-                    if (node !== other && (other.isStatic || (node.getComponentOfType(Camera) && other.getComponentOfType(Dart)?.pickable))) {
+                    if (node !== other && (other.isStatic || (node.getComponentOfType(Camera) && (other.getComponentOfType(Dart)?.pickable || other.isPlate)))) {
                         this.resolveCollision(node, other);
                     }
                 });
@@ -145,6 +146,14 @@ export class Physics {
             this.dartsLeft[0]++;
         }
 
+        if(a.getComponentOfType(Camera) && b.isPlate && minDirection){
+            this.scene.traverse(node => {
+                if(node.getComponentOfType(Dart)){
+                    this.scene.removeChild(node);
+                }
+            });
+            resetDarts();
+        }
     }
 
 }
