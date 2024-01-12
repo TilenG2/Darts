@@ -164,8 +164,8 @@ function update(t, dt) {
 //Dart Plate
 let plate = gltfLoader.loadNode("Cube.015");
 plate.aabb = {
-    max: [2.3, 2, 1.0000004768371582],
-    min: [-0.9999998807907104, -0.9999999403953552, -0.999999463558197]
+    max: [2.5, 2, 1],
+    min: [-1, -1, -1]
 };
 plate.isStatic = false;
 plate.isPlate = true;

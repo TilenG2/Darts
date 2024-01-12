@@ -37,16 +37,25 @@ export class Dartboard {
   }
 
   calculatePoints(dartTip){
+    if(this.points[0] == 301){
+      return;
+    }
     const x = Math.abs(dartTip.x)-this.dartBoardCenter[0];
     const y = Math.abs(dartTip.y)-this.dartBoardCenter[1];
     const pitagora = Math.sqrt(x*x+y*y);
     if(pitagora <= this.radiuses[0]){
       this.points[0] += this.pointsRule[this.radiuses[0]];
       updatePointsDisplay();
+      if(this.points[0] > 301){
+        this.points[0] = 0;
+      }
       return;
     }else if(this.radiuses[0] < pitagora && pitagora <= this.radiuses[1]){
       this.points[0] += this.pointsRule[this.radiuses[1]];
       updatePointsDisplay();
+      if(this.points[0] > 301){
+        this.points[0] = 0;
+      }
       return;
     }else{
       for(let i = 1; i < 5; i++){
@@ -59,12 +68,18 @@ export class Dartboard {
           if(this.angles[0] < dartAngle || dartAngle <= this.angles[1]){
             this.points[0] += this.pointsRule[[[ruleRadius, this.angles[0], this.angles[1]]]];
             updatePointsDisplay();
+            if(this.points[0] > 301){
+              this.points[0] = 0;
+            }
             return;
           }else{
             for(let j = 1; j < this.angles.length-1; j++){
               if((this.angles[j] < dartAngle) && (dartAngle <= this.angles[j+1])){
                 this.points[0] += this.pointsRule[[[ruleRadius, this.angles[j], this.angles[j+1]]]];
                 updatePointsDisplay();
+                if(this.points[0] > 301){
+                  this.points[0] = 0;
+                }
                 return;
               }
             }
