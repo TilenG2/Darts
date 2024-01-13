@@ -7,6 +7,7 @@ import { Transform } from './Transform.js';
 import { Camera } from './Camera.js';
 import { resetDarts } from '../../../main.js';
 let balloonPopSound = new Audio("common/audio/balloon.wav");
+let dartLandSound = new Audio("common/audio/Dart.wav");
 
 export class Physics {
 
@@ -129,6 +130,7 @@ export class Physics {
             }else if(b.getComponentOfType(Dartboard)){
                 a.getComponentOfType(Dart).stop = true;
                 const myDart = a.getComponentOfType(Dart);
+                replay(dartLandSound);
                 if(myDart.calculate){
                     const myDartboard = b.getComponentOfType(Dartboard);
                     myDartboard.calculatePoints(myDart.tip());
@@ -136,6 +138,7 @@ export class Physics {
                 }          
                 a.getComponentOfType(Dart).pickable = true;
             }else{
+                replay(dartLandSound);
                 a.getComponentOfType(Dart).stop = true;
                 a.getComponentOfType(Dart).pickable = true;
             }
@@ -154,6 +157,10 @@ export class Physics {
             });
             resetDarts();
         }
+    function replay(audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.play();
     }
-
+    }
 }
